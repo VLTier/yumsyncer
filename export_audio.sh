@@ -1,10 +1,10 @@
 #!/bin/bash
 
 ##############################################################################
-# Borg Discord Audio Exporter
+# Craig Discord Audio Exporter
 #
-# This script connects to a remote Ubuntu server running Borg discord
-# listener and exports all audio files to a local directory.
+# This script connects to a remote Ubuntu server running Craig Discord bot
+# (https://craig.chat) and exports all audio recordings to a local directory.
 ##############################################################################
 
 set -e
@@ -46,15 +46,17 @@ fi
 
 # Set defaults
 REMOTE_PORT="${REMOTE_PORT:-22}"
-BORG_INSTALL_PATH="${BORG_INSTALL_PATH:-~/borg-discord}"
+CRAIG_INSTALL_PATH="${CRAIG_INSTALL_PATH:-~/craig}"
+CRAIG_REC_PATH="${CRAIG_REC_PATH:-${CRAIG_INSTALL_PATH}/rec}"
 EXPORT_PATH="${EXPORT_PATH:-/export}"
 AUDIO_EXTENSIONS="${AUDIO_EXTENSIONS:-mp3,wav,ogg,flac,m4a,aac,opus,webm}"
 SYNC_INTERVAL="${SYNC_INTERVAL:-3600}"
 RUN_ONCE="${RUN_ONCE:-false}"
 
-log_info "Starting Borg Discord Audio Exporter"
+log_info "Starting Craig Discord Audio Exporter"
 log_info "Remote: ${REMOTE_USER}@${REMOTE_HOST}:${REMOTE_PORT}"
-log_info "Borg path: ${BORG_INSTALL_PATH}"
+log_info "Craig installation: ${CRAIG_INSTALL_PATH}"
+log_info "Craig recordings: ${CRAIG_REC_PATH}"
 log_info "Export path: ${EXPORT_PATH}"
 
 # Setup SSH key if provided
@@ -103,7 +105,7 @@ find_audio_files() {
 
     # Build find command with all extensions
     IFS=',' read -ra EXTENSIONS <<< "$AUDIO_EXTENSIONS"
-    FIND_CMD="find ${BORG_INSTALL_PATH} -type f \\( "
+    FIND_CMD="find ${CRAIG_REC_PATH} -type f \\( "
 
     for i in "${!EXTENSIONS[@]}"; do
         ext="${EXTENSIONS[$i]}"
@@ -158,7 +160,7 @@ export_audio_files() {
     if rsync -avzh --progress \
         -e "ssh $SSH_OPTIONS -p $REMOTE_PORT" \
         $RSYNC_FILTERS \
-        "${REMOTE_USER}@${REMOTE_HOST}:${BORG_INSTALL_PATH}/" \
+        "${REMOTE_USER}@${REMOTE_HOST}:${CRAIG_REC_PATH}/" \
         "$EXPORT_PATH/"; then
 
         log_info "Export completed successfully"
@@ -184,14 +186,15 @@ create_report() {
     log_info "Creating export report..."
 
     cat > "$REPORT_FILE" << EOF
-Borg Discord Audio Export Report
-=================================
+Craig Discord Audio Export Report
+==================================
 Generated: $(date)
 
 Server Information:
 - Host: ${REMOTE_HOST}:${REMOTE_PORT}
 - User: ${REMOTE_USER}
-- Borg Path: ${BORG_INSTALL_PATH}
+- Craig Installation: ${CRAIG_INSTALL_PATH}
+- Craig Recordings: ${CRAIG_REC_PATH}
 
 Export Information:
 - Export Path: ${EXPORT_PATH}

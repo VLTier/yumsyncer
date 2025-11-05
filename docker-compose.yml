@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  borg-audio-exporter:
+  craig-audio-exporter:
     build: .
-    container_name: borg-audio-exporter
+    container_name: craig-audio-exporter
     restart: unless-stopped
 
     # Environment variables from .env file
@@ -12,7 +12,8 @@ services:
       - REMOTE_USER=${REMOTE_USER}
       - REMOTE_PORT=${REMOTE_PORT:-22}
       - SSH_KEY_PATH=${SSH_KEY_PATH:-/ssh/id_rsa}
-      - BORG_INSTALL_PATH=${BORG_INSTALL_PATH:-~/borg-discord}
+      - CRAIG_INSTALL_PATH=${CRAIG_INSTALL_PATH:-~/craig}
+      - CRAIG_REC_PATH=${CRAIG_REC_PATH}
       - EXPORT_PATH=/export
       - AUDIO_EXTENSIONS=${AUDIO_EXTENSIONS:-mp3,wav,ogg,flac,m4a,aac,opus,webm}
       - SYNC_INTERVAL=${SYNC_INTERVAL:-3600}
