@@ -1,34 +1,21 @@
-##################################################################################
-#MIT License
-#
-#Copyright (c) 2021 Kai
-#
-#Permission is hereby granted, free of charge, to any person obtaining a copy
-#of this software and associated documentation files (the "Software"), to deal
-#in the Software without restriction, including without limitation the rights
-#to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-#copies of the Software, and to permit persons to whom the Software is
-#furnished to do so, subject to the following conditions:
-#
-#The above copyright notice and this permission notice shall be included in all
-#copies or substantial portions of the Software.
-#
-#THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-#IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-#FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-#AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-#LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-#OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-#SOFTWARE.
-##################################################################################
+FROM alpine:latest
 
-FROM centos:7.9.2009
-ENV waitDuration 12h
-ENV TZ Europe/Amsterdam
-ENV oneTimeRun 0
-VOLUME /data
-VOLUME /repo
-COPY script.sh /script.sh
-RUN yum clean all && yum update -y
-RUN yum install -y reposync createrepo epel-release
-CMD bash /script.sh
+# Install required packages
+RUN apk add --no-cache \
+    bash \
+    openssh-client \
+    rsync \
+    tzdata
+
+# Create necessary directories
+RUN mkdir -p /root/.ssh /export /scripts
+
+# Copy the export script
+COPY export_audio.sh /scripts/export_audio.sh
+RUN chmod +x /scripts/export_audio.sh
+
+# Set working directory
+WORKDIR /scripts
+
+# Default command
+CMD ["/scripts/export_audio.sh"]

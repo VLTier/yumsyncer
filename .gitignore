@@ -31,3 +31,21 @@ Temporary Items
 .apdisk
 
 # End of https://www.toptal.com/developers/gitignore/api/macos
+
+# Environment and sensitive files
+.env
+
+# SSH keys
+*.pem
+*.key
+id_rsa
+id_rsa.pub
+
+# Export directory
+export/
+
+# Docker
+.dockerignore
+
+# Logs
+*.log

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  borg-audio-exporter:
+    build: .
+    container_name: borg-audio-exporter
+    restart: unless-stopped
+
+    # Environment variables from .env file
+    environment:
+      - REMOTE_HOST=${REMOTE_HOST}
+      - REMOTE_USER=${REMOTE_USER}
+      - REMOTE_PORT=${REMOTE_PORT:-22}
+      - SSH_KEY_PATH=${SSH_KEY_PATH:-/ssh/id_rsa}
+      - BORG_INSTALL_PATH=${BORG_INSTALL_PATH:-~/borg-discord}
+      - EXPORT_PATH=/export
+      - AUDIO_EXTENSIONS=${AUDIO_EXTENSIONS:-mp3,wav,ogg,flac,m4a,aac,opus,webm}
+      - SYNC_INTERVAL=${SYNC_INTERVAL:-3600}
+      - RUN_ONCE=${RUN_ONCE:-false}
+      - TZ=${TZ:-UTC}
+
+    volumes:
+      # Mount your SSH private key (read-only)
+      - ${SSH_KEY_HOST_PATH}:/ssh/id_rsa:ro
+
+      # Mount the export directory (where audio files will be saved)
+      - ${EXPORT_HOST_PATH:-./export}:/export
+
+    # Uncomment if you need to access the container for debugging
+    # stdin_open: true
+    # tty: true
